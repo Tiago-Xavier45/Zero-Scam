@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/verificacoes")
@@ -37,8 +39,8 @@ public class VerificacaoController {
     }
 
     @GetMapping("/dominio/{dominio}")
-    public ResponseEntity<List<Verificacao>> buscarPorDominio(@PathVariable String dominio) {
-        return ResponseEntity.ok(verificacaoService.buscarPorDominio(dominio));
+    public ResponseEntity<Optional<Verificacao>> buscarPorDominio(@PathVariable String dominio) {
+        return ResponseEntity.ok(verificacaoService.buscarPorId(dominio));
     }
 
     @GetMapping("/suspeitos")
@@ -47,28 +49,26 @@ public class VerificacaoController {
     }
 
     @GetMapping("/alto-risco")
-    public ResponseEntity<List<Verificacao>> buscarAltoRisco(
+    public ResponseEntity<Object> buscarAltoRisco(
             @RequestParam(defaultValue = "70") Integer scoreMinimo) {
         return ResponseEntity.ok(verificacaoService.buscarPorScoreMinimo(scoreMinimo));
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<Verificacao>> buscarPorUsuario(@PathVariable String usuarioId) {
-        return ResponseEntity.ok(verificacaoService.buscarPorUsuario(usuarioId));
+    public ResponseEntity<Optional<Verificacao>> buscarPorUsuario(@PathVariable String usuarioId) {
+        return ResponseEntity.ok(verificacaoService.buscarPorId(usuarioId));
     }
 
-    @PostMapping("/verificar")
-    public ResponseEntity<Verificacao> verificarLink(@RequestParam String link) {
-        Verificacao verificacao = verificacaoService.verificarLink(link);
-        return ResponseEntity.status(HttpStatus.CREATED).body(verificacao);
+   @PostMapping
+public ResponseEntity<?> verificar(@RequestBody Map<String, String> body) {
+    String link = body.get("link");
+    if (link == null || link.isBlank()) {
+        return ResponseEntity.badRequest().body("Link é obrigatório");
     }
-
-    @PostMapping
-    public ResponseEntity<Verificacao> criar(@RequestBody Verificacao verificacao) {
-        Verificacao novaVerificacao = verificacaoService.criar(verificacao);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaVerificacao);
-    }
-
+    Map<String, Object> resultado = verificacaoService.verificarLinkCompleto(link);
+    return ResponseEntity.status(HttpStatus.CREATED).body(resultado);
+}
+    
     @PutMapping("/{id}")
     public ResponseEntity<Verificacao> atualizar(
             @PathVariable String id,

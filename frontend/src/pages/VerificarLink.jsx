@@ -14,81 +14,74 @@ export default function VerificarLink() {
   const isLoggedIn = Boolean(localStorage.getItem("usuario"));
 
   const handleVerificar = async () => {
-    const urlRegex = /^(https?:\/\/)([a-z0-9-]+\.)+[a-z]{2,}(\/.*)?$/i;
+  const urlRegex = /^(https?:\/\/)([a-z0-9-]+\.)+[a-z]{2,}(\/.*)?$/i;
 
-    if (!link.trim()) {
-      setResultado({
-        status: 'erro',
-        mensagem: 'Por favor, insira um link antes de analisar.',
-      });
-      return;
+  if (!link.trim()) {
+    setResultado({
+      status: 'erro',
+      mensagem: 'Por favor, insira um link antes de analisar.',
+    });
+    return;
+  }
+
+  if (!urlRegex.test(link.trim())) {
+    setResultado({
+      status: 'erro',
+      mensagem: 'O link inserido não parece válido.',
+    });
+    return;
+  }
+
+  setCarregando(true);
+  setResultado(null);
+
+  try {
+    console.log('Verificando link:', link);
+
+    const response = await fetch(`http://localhost:8083/api/verificacoes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ link: link.trim() }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro na resposta do servidor');
     }
 
-    if (!urlRegex.test(link.trim())) {
-      setResultado({
-        status: 'erro',
-        mensagem: 'O link inserido não parece válido.',
-      });
-      return;
-    }
+    const data = await response.json();
+    console.log('Resposta da API:', data);
 
-    setCarregando(true);
-    setResultado(null);
+    const ehPerigoso = data.suspeito || data.scoreRisco >= 60 || data.totalDenuncias >= 5;
 
-    try {
-      console.log('🔍 Verificando link:', link);
+    setResultado({
+      status: ehPerigoso ? 'perigoso' : 'seguro',
+      mensagem: ehPerigoso 
+        ? 'Detectamos atividades suspeitas associadas a este link.'
+        : 'Este link parece confiável e não foi reportado em nossa base de dados.',
+      detalhes: {
+        dominioRegistrado: data.dominioRegistrado,
+        score: data.scoreRisco,
+        totalDenuncias: data.totalDenuncias || 0,
+        valorColetado: data.valorTotalPerdido || 0,
+        dicaSeguranca: data.dicaSeguranca,
+        paisRegistro: data.paisRegistro,
+        dataRegistro: data.dataRegistro,
+        dominio: data.dominio
+      },
+    });
 
-      
-      const response = await fetch('http://localhost:8080/api/verificar-link', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ link: link.trim() })
-      });
-
-      const data = await response.json();
-      console.log('Resposta da API:', data);
-
-      if (data.sucesso) {
-        const analise = data.dados;
-
-        
-        const ehPerigoso = analise.suspeito || analise.scoreRisco >= 60 || analise.totalDenuncias >= 5;
-
-        setResultado({
-          status: ehPerigoso ? 'perigoso' : 'seguro',
-          mensagem: ehPerigoso 
-            ? 'Detectamos atividades suspeitas associadas a este link.'
-            : 'Este link parece confiável e não foi reportado em nossa base de dados.',
-          detalhes: {
-            dominioRegistrado: analise.dominioRegistrado,
-            score: analise.scoreRisco,
-            totalDenuncias: analise.totalDenuncias,
-            valorColetado: analise.valorTotalPerdido,
-            dicaSeguranca: analise.dicaSeguranca,
-            paisRegistro: analise.paisRegistro,
-            dataRegistro: analise.dataRegistro,
-            dominio: analise.dominio
-          },
-        });
-      } else {
-        setResultado({
-          status: 'erro',
-          mensagem: data.mensagem || 'Erro ao analisar o link. Tente novamente.',
-        });
-      }
-
-    } catch (error) {
-      console.error('Erro ao verificar link:', error);
-      setResultado({
-        status: 'erro',
-        mensagem: 'Erro ao conectar com o servidor. Verifique se o backend está rodando.',
-      });
-    } finally {
-      setCarregando(false);
-    }
-  };
+  } catch (error) {
+    console.error('Erro ao verificar link:', error);
+    setResultado({
+      status: 'erro',
+      mensagem: 'Erro ao conectar com o servidor.',
+    });
+  } finally {
+    setCarregando(false);
+  }
+};
 
   return (
     <section className={styles.hero}>
@@ -118,7 +111,6 @@ export default function VerificarLink() {
           </button>
         </div>
 
-        {/* RESULTADO */}
         {resultado && (
           <>
             <div

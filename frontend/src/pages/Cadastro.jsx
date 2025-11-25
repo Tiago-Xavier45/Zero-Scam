@@ -97,7 +97,7 @@ export default function Cadastro() {
   };
 
   try {
-    const response = await fetch("http://localhost:8080/api/usuarios/registrar", {
+    const response = await fetch("http://localhost:8081/api/usuarios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dadosCadastro),

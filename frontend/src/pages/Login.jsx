@@ -45,7 +45,7 @@ export default function Login() {
   if (!isValid) return;
 
   try {
-    const response = await fetch("http://localhost:8080/api/usuarios/login", {
+    const response = await fetch("http://localhost:8082/api/usuarios", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
