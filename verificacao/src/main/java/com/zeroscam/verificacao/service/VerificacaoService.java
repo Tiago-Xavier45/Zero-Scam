@@ -1,12 +1,15 @@
 package com.zeroscam.verificacao.service;
 
 import com.zeroscam.verificacao.model.Verificacao;
+import com.zeroscam.verificacao.client.DenunciaFeignClient;
 import com.zeroscam.verificacao.repository.VerificacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -14,6 +17,12 @@ public class VerificacaoService {
 
     @Autowired
     private VerificacaoRepository verificacaoRepository;
+
+    @Autowired
+    private WhoisService whoisService;
+
+    @Autowired
+    private DenunciaFeignClient denunciaClient;
 
     public List<Verificacao> listarTodas() {
         return verificacaoRepository.findAll();
@@ -27,10 +36,6 @@ public class VerificacaoService {
         return verificacaoRepository.findByLink(link);
     }
 
-    public List<Verificacao> buscarPorDominio(String dominio) {
-        return verificacaoRepository.findByDominio(dominio);
-    }
-
     public List<Verificacao> buscarSuspeitos() {
         return verificacaoRepository.findBySuspeitoTrue();
     }
@@ -39,25 +44,125 @@ public class VerificacaoService {
         return verificacaoRepository.findByScoreRiscoGreaterThanEqual(scoreMinimo);
     }
 
-    public List<Verificacao> buscarPorUsuario(String usuarioId) {
-        return verificacaoRepository.findByUsuarioId(usuarioId);
-    }
-
     public Verificacao verificarLink(String link) {
         Optional<Verificacao> existente = buscarPorLink(link);
         if (existente.isPresent()) {
             return existente.get();
         }
 
+      
         Verificacao verificacao = new Verificacao();
         verificacao.setLink(link);
         verificacao.setDominio(extrairDominio(link));
         verificacao.setDataVerificacao(LocalDateTime.now());
-        verificacao.setScoreRisco(calcularRisco(link));
+
+       
+        Map<String, Object> whoisData = whoisService.consultarWhois(verificacao.getDominio());
+        if (whoisData != null) {
+            verificacao.setPaisRegistro(whoisService.extrairPaisRegistro(whoisData));
+        }
+
+        
+        int totalDenuncias = buscarTotalDenuncias(link);
+
+        
+        verificacao.setScoreRisco(calcularRisco(link, verificacao.getPaisRegistro(), totalDenuncias));
         verificacao.setSuspeito(verificacao.getScoreRisco() >= 50);
 
         return verificacaoRepository.save(verificacao);
     }
+
+ public Map<String, Object> verificarLinkCompleto(String link) {
+    // Busca denúncias atualizadas PRIMEIRO
+    int totalDenuncias = buscarTotalDenuncias(link);
+    double valorTotalPerdido = buscarValorTotalPerdido(link);
+    
+    Verificacao verificacao;
+    Optional<Verificacao> existente = buscarPorLink(link);
+    
+    if (existente.isPresent()) {
+        verificacao = existente.get();
+    } else {
+        verificacao = new Verificacao();
+        verificacao.setLink(link);
+        verificacao.setDominio(extrairDominio(link));
+        verificacao.setDataVerificacao(LocalDateTime.now());
+        
+        Map<String, Object> whoisData = whoisService.consultarWhois(verificacao.getDominio());
+        if (whoisData != null) {
+            verificacao.setPaisRegistro(whoisService.extrairPaisRegistro(whoisData));
+        }
+    }
+    
+    
+    int scoreAtualizado = calcularRisco(link, verificacao.getPaisRegistro(), totalDenuncias);
+    verificacao.setScoreRisco(scoreAtualizado);
+    verificacao.setSuspeito(scoreAtualizado >= 50);
+   
+    verificacaoRepository.save(verificacao);
+    
+    Map<String, Object> resultado = new HashMap<>();
+    resultado.put("id", verificacao.getId());
+    resultado.put("link", verificacao.getLink());
+    resultado.put("dominio", verificacao.getDominio());
+    resultado.put("dominioRegistrado", verificacao.getDominio() != null);
+    resultado.put("scoreRisco", scoreAtualizado);
+    resultado.put("suspeito", verificacao.getSuspeito());
+    resultado.put("paisRegistro", verificacao.getPaisRegistro() != null ? verificacao.getPaisRegistro() : "Não identificado");
+    resultado.put("dataRegistro", verificacao.getDataVerificacao().toString());
+    resultado.put("totalDenuncias", totalDenuncias);
+    resultado.put("valorTotalPerdido", valorTotalPerdido);
+    resultado.put("dicaSeguranca", gerarDicaSeguranca(scoreAtualizado, totalDenuncias));
+    
+    return resultado;
+}
+
+private double buscarValorTotalPerdido(String link) {
+    try {
+        List<Map<String, Object>> denuncias = denunciaClient.buscarPorLink(link);
+        if (denuncias == null || denuncias.isEmpty()) {
+            return 0.0;
+        }
+        
+        double total = 0.0;
+        for (Map<String, Object> denuncia : denuncias) {
+            Object valor = denuncia.get("valorPerdido");
+            if (valor != null) {
+                if (valor instanceof Number) {
+                    total += ((Number) valor).doubleValue();
+                }
+            }
+        }
+        return total;
+    } catch (Exception e) {
+        System.err.println("Erro ao buscar valor total perdido: " + e.getMessage());
+        return 0.0;
+    }
+}
+
+private String gerarDicaSeguranca(int scoreRisco, int totalDenuncias) {
+    if (scoreRisco >= 70 || totalDenuncias >= 5) {
+        return "Alerta vermelho! Este link apresenta alto risco de golpe. Evite acessá-lo e, se possível, denuncie.";
+    } else if (scoreRisco >= 50 || totalDenuncias >= 2) {
+        return "Atenção! Este link possui alguns sinais suspeitos. Tenha cautela ao acessá-lo.";
+    } else if (scoreRisco >= 30 || totalDenuncias >= 1) {
+        return "Este link apresenta alguns alertas. Verifique a autenticidade antes de fornecer dados.";
+    } else {
+        return "Este link parece seguro, mas sempre verifique a URL antes de inserir informações pessoais.";
+    }
+}
+    private int buscarTotalDenuncias(String link) {
+    try {
+        System.out.println("Buscando denúncias para: " + link);  // DEBUG
+        List<Map<String, Object>> denuncias = denunciaClient.buscarPorLink(link);
+        System.out.println("Denúncias encontradas: " + denuncias);  // DEBUG
+        return denuncias != null ? denuncias.size() : 0;
+    } catch (Exception e) {
+        System.err.println("Erro ao buscar denúncias: " + e.getMessage());
+        e.printStackTrace();
+        return 0;
+    }
+}
 
     public Verificacao criar(Verificacao verificacao) {
         verificacao.setDataVerificacao(LocalDateTime.now());
@@ -94,25 +199,47 @@ public class VerificacaoService {
         }
     }
 
-    private Integer calcularRisco(String link) {
+    private Integer calcularRisco(String link, String paisRegistro, int totalDenuncias) {
         int risco = 0;
 
+        // Sem HTTPS
         if (link.startsWith("http://")) {
             risco += 20;
         }
 
+        // URL com IP
         if (link.matches(".*\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}.*")) {
             risco += 30;
         }
 
+        // URL muito longa
         if (link.length() > 100) {
             risco += 15;
         }
 
+        // Domínios gratuitos suspeitos
         String linkLower = link.toLowerCase();
         if (linkLower.contains(".tk") || linkLower.contains(".ml") || 
             linkLower.contains(".ga") || linkLower.contains(".cf")) {
             risco += 25;
+        }
+
+        // País de registro suspeito
+        if (paisRegistro != null) {
+            String paisLower = paisRegistro.toLowerCase();
+            if (paisLower.contains("russia") || paisLower.contains("china") || 
+                paisLower.contains("nigeria")) {
+                risco += 15;
+            }
+        }
+
+        // NOVO: Risco baseado em denúncias
+        if (totalDenuncias >= 10) {
+            risco += 40;
+        } else if (totalDenuncias >= 5) {
+            risco += 25;
+        } else if (totalDenuncias >= 1) {
+            risco += 10;
         }
 
         return Math.min(100, risco);

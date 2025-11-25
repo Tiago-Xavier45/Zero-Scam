@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -28,6 +30,24 @@ public class UsuarioController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credenciais) {
+        String email = credenciais.get("email");
+        String senha = credenciais.get("senha");
+    
+        boolean autenticado = usuarioService.verificarCredenciais(email, senha);
+    
+    if (autenticado) {
+        Usuario usuario = usuarioService.buscarPorEmail(email).orElse(null);
+        return ResponseEntity.ok(usuario);
+    } else {
+        Map<String, String> response = new HashMap<>();
+        response.put("erro", "Credenciais inválidas");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+}
+
 
     @GetMapping("/email/{email}")
     public ResponseEntity<Usuario> buscarPorEmail(@PathVariable String email) {
@@ -62,17 +82,5 @@ public class UsuarioController {
     public ResponseEntity<Void> deletar(@PathVariable String id) {
         usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestParam String email,
-            @RequestParam String senha) {
-        if (usuarioService.verificarCredenciais(email, senha)) {
-            return usuarioService.buscarPorEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-        }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
     }
 }

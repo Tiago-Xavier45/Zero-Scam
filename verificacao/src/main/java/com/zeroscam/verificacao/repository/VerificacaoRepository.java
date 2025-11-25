@@ -20,5 +20,6 @@ public interface VerificacaoRepository extends MongoRepository<Verificacao, Stri
     
     List<Verificacao> findByUsuarioId(String usuarioId);
     
+    
     List<Verificacao> findByPaisRegistro(String paisRegistro);
 }
