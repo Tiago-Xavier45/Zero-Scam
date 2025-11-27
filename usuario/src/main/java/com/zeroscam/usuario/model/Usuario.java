@@ -15,13 +15,13 @@ public class Usuario {
     private String nome;
     private String sobrenome;
 
-    @Indexed(unique = true) // 🔥 Email deve ser único, não a senha!
+    @Indexed(unique = true) 
     private String email;
 
     private String senha;
 
-    private String cidade;  // ⬅ NOVO
-    private String estado;  // ⬅ NOVO
+    private String cidade;  
+    private String estado;  
 
     private LocalDateTime dataCadastro;
 

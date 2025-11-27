@@ -10,6 +10,8 @@ export default function MinhaConta() {
     nome: "",
     sobrenome: "",
     email: "",
+    cidade: "",
+    estado: "",
     senha: "",
   });
 
@@ -129,21 +131,31 @@ export default function MinhaConta() {
                 <span>{dados.email}</span>
               </div>
 
-                <div className={styles.rowSenha}>
+              <div className={styles.row}>
+                <span className={styles.label}>Cidade:</span>
+                <span>{dados.cidade}</span>
+              </div>
+
+              <div className={styles.row}>
+                <span className={styles.label}>Estado:</span>
+                <span>{dados.estado}</span>
+              </div>
+
+              <div className={styles.rowSenha}>
                 <div className={styles.row}>
-                    <span className={styles.label}>Senha:</span>
-                    <span className={styles.senhaValor}>***********</span>
+                  <span className={styles.label}>Senha:</span>
+                  <span className={styles.senhaValor}>***********</span>
                 </div>
 
                 <div className={styles.senhaRightBox}>
-                    <button
+                  <button
                     className={styles.altSenhaRight}
                     onClick={() => setEditSenha(true)}
-                    >
+                  >
                     Alterar senha
-                    </button>
+                  </button>
                 </div>
-                </div>
+              </div>
 
               <button className={styles.btn} onClick={() => setEditando(true)}>
                 Editar dados
@@ -165,16 +177,32 @@ export default function MinhaConta() {
 
                 <label>Email</label>
                 <input name="email" value={editData.email} onChange={handleEditChange} />
+
+                <label>Cidade</label>
+                <input name="cidade" value={editData.cidade} onChange={handleEditChange} />
+
+                <label>Estado</label>
+                <select
+                  name="estado"
+                  value={editData.estado}
+                  onChange={handleEditChange}
+                  className={styles.select}
+                >
+                  <option value="">Selecione...</option>
+                  {[
+                    "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS",
+                    "MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"
+                  ].map((uf) => (
+                    <option key={uf} value={uf}>{uf}</option>
+                  ))}
+                </select>
               </form>
 
               <div className={styles.rowButtons}>
                 <button className={styles.btn} onClick={salvarDados}>
                   Salvar
                 </button>
-                <button
-                  className={styles.cancelBtn}
-                  onClick={() => setEditando(false)}
-                >
+                <button className={styles.cancelBtn} onClick={() => setEditando(false)}>
                   Cancelar
                 </button>
               </div>
