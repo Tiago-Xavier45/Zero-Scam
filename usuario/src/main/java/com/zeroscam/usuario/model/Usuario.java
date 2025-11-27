@@ -11,71 +11,53 @@ public class Usuario {
     
     @Id
     private String id;
+
     private String nome;
     private String sobrenome;
 
-    @Indexed(unique = true)
-    private String senha;
+    @Indexed(unique = true) // 🔥 Email deve ser único, não a senha!
     private String email;
+
+    private String senha;
+
+    private String cidade;  // ⬅ NOVO
+    private String estado;  // ⬅ NOVO
 
     private LocalDateTime dataCadastro;
 
     public Usuario() {}
 
-    public Usuario(String nome, String sobrenome, String email, String senha) {
+    public Usuario(String nome, String sobrenome, String email, String senha, String cidade, String estado) {
         this.nome = nome;
         this.sobrenome = sobrenome;
         this.email = email;
         this.senha = senha;
+        this.cidade = cidade;
+        this.estado = estado;
         this.dataCadastro = LocalDateTime.now();
     }
 
-    
-    public String getId() {
-        return id;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public String getNome() {
-        return nome;
-    }
+    public String getSobrenome() { return sobrenome; }
+    public void setSobrenome(String sobrenome) { this.sobrenome = sobrenome; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getSobrenome() {
-        return sobrenome;
-    }
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
 
-    public void setSobrenome(String sobrenome) {
-        this.sobrenome = sobrenome;
-    }
+    public String getCidade() { return cidade; }
+    public void setCidade(String cidade) { this.cidade = cidade; }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }   
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    public LocalDateTime getDataCadastro() {
-        return dataCadastro;
-    }
-
-    public void setDataCadastro(LocalDateTime dataCadastro) {
-        this.dataCadastro = dataCadastro;
-    }
+    public LocalDateTime getDataCadastro() { return dataCadastro; }
+    public void setDataCadastro(LocalDateTime dataCadastro) { this.dataCadastro = dataCadastro; }
 }

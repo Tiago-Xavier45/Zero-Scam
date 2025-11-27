@@ -103,6 +103,40 @@ input:focus {
   background: rgba(0, 0, 0, 0.45);
 }
 
+select {
+  appearance: none; /* Remove o estilo padrão do browser */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  padding-right: 32px; /* espaço para o ícone */
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 15px;
+  cursor: pointer;
+
+  transition: border-color 0.2s, background 0.2s;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 10px) center; /* Ícone mais perto */
+  background-size: 14px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #b48aff;
+  box-shadow: 0 0 6px rgba(180, 138, 255, 0.55);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+select option {
+  background: #1b1b1b;
+  color: #fff;
+}
+
 /* Mensagens de erro simples */
 .error {
   color: #ff7070;
@@ -229,12 +263,126 @@ input:focus {
 
 
 /* Responsivo */
-@media (max-width: 480px) {
+/* === Responsividade para tablets (até 768px) === */
+@media (max-width: 768px) {
+  .hero {
+    padding: 60px 20px;
+    min-height: auto;
+  }
+
   .card {
-    padding: 35px 25px;
+    margin-top: 120px;
+    max-width: 420px;
+    padding: 40px 30px;
+  }
+
+  .card h2 {
+    font-size: 30px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .row {
+    gap: 10px;
+  }
+
+  input {
+    font-size: 14px;
+    padding: 11px;
+  }
+
+  .validationBox {
+    padding: 10px 12px;
+    font-size: 12.5px;
+  }
+
+  .validationBox p {
+    font-size: 12px;
+  }
+}
+
+/* === Responsividade para celulares médios (até 600px) === */
+@media (max-width: 600px) {
+  .card {
+    max-width: 90%;
+    padding: 32px 22px;
+  }
+
+  .card h2 {
+    font-size: 28px;
   }
 
   .row {
     flex-direction: column;
+    gap: 8px;
+  }
+
+  input {
+    padding: 10px;
+  }
+
+  .btn {
+    padding: 12px;
+    font-size: 13.5px;
+  }
+
+  .validationBox {
+    padding: 10px;
+  }
+}
+
+/* 480px === */
+@media (max-width: 480px) {
+  .hero {
+    padding: 50px 15px;
+  }
+
+  .card {
+    padding: 28px 20px;
+    width: 100%;
+    max-width: 92%;
+  }
+
+  .card h2 {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 12.5px;
+  }
+
+  input {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .validationBox {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .validationBox p {
+    font-size: 11.5px;
+  }
+
+  .btn {
+    font-size: 13px;
+    padding: 11px;
+  }
+
+  .loginText {
+    font-size: 13px;
+    margin-top: 18px;
   }
 }

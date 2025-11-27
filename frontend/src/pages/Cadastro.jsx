@@ -10,8 +10,9 @@ export default function Cadastro() {
     sobrenome: "",
     email: "",
     senha: "",
-    cidade: "",
     confirmarSenha: "",
+    cidade: "",
+    estado: "",
   });
 
   const [errors, setErrors] = useState({
@@ -29,7 +30,7 @@ export default function Cadastro() {
     match: false,
   });
 
-  // Atualiza os campos e faz validações básicas
+  // Atualiza os campos e valida conforme necessário
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -46,7 +47,7 @@ export default function Cadastro() {
     }
   };
 
-  // Valida nome, sobrenome e email
+  // Validação de nome, sobrenome e email
   const validateField = (name, value) => {
     let message = "";
 
@@ -64,7 +65,7 @@ export default function Cadastro() {
     setErrors((prev) => ({ ...prev, [name]: message }));
   };
 
-  // Valida senha e confirmação
+  // Validação da senha e confirmação
   const validatePassword = (senha, confirmarSenha) => {
     const checks = {
       length: senha.length >= 8,
@@ -78,47 +79,56 @@ export default function Cadastro() {
 
   // Envio do formulário
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  validateField("nome", formData.nome);
-  validateField("sobrenome", formData.sobrenome);
-  validateField("email", formData.email);
+    validateField("nome", formData.nome);
+    validateField("sobrenome", formData.sobrenome);
+    validateField("email", formData.email);
 
-  if (errors.nome || errors.sobrenome || errors.email || !validations.match) {
-    console.log("Formulário inválido");
-    return;
-  }
-
-  const dadosCadastro = {
-    nome: formData.nome,
-    sobrenome: formData.sobrenome,
-    email: formData.email,
-    senha: formData.senha
-  };
-
-  try {
-    const response = await fetch("http://localhost:8080/api/usuarios", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dadosCadastro),
-    });
-
-    if (!response.ok) {
-      const err = await response.json();
-      alert("Erro ao cadastrar: " + (err.erro || "Tente novamente"));
+    if (errors.nome || errors.sobrenome || errors.email || !validations.match) {
+      console.log("Formulário inválido");
       return;
     }
 
-    alert("Cadastro realizado com sucesso!");
-    setFormData({ nome: "", sobrenome: "", email: "", senha: "", confirmarSenha: "" });
-    window.location.href = "/";
+    const dadosCadastro = {
+      nome: formData.nome,
+      sobrenome: formData.sobrenome,
+      email: formData.email,
+      senha: formData.senha,
+      cidade: formData.cidade,
+      estado: formData.estado,
+    };
 
-  } catch (error) {
-    console.error("Erro:", error);
-    alert("Erro ao conectar ao servidor.");
-  }
-};
+    try {
+      const response = await fetch("http://localhost:8080/api/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dadosCadastro),
+      });
 
+      if (!response.ok) {
+        const err = await response.json();
+        alert("Erro ao cadastrar: " + (err.erro || "Tente novamente"));
+        return;
+      }
+
+      alert("Cadastro realizado com sucesso!");
+      setFormData({
+        nome: "",
+        sobrenome: "",
+        email: "",
+        senha: "",
+        confirmarSenha: "",
+        cidade: "",
+        estado: "",
+      });
+
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao conectar ao servidor.");
+    }
+  };
 
   return (
     <>
@@ -126,13 +136,17 @@ export default function Cadastro() {
       <section className={styles.hero}>
         <div className={styles.card}>
           <SiHiveBlockchain className={styles.logoIcon} />
+
           <h2>Cadastro.</h2>
           <p className={styles.subtitle}>
             Crie sua conta para acessar nossa comunidade.
           </p>
+
           <hr className={styles.divider} />
 
           <form onSubmit={handleSubmit} className={styles.form}>
+
+            {/* Nome + Sobrenome */}
             <div className={styles.row}>
               <div className={styles.inputGroup}>
                 <label>Nome:</label>
@@ -156,7 +170,9 @@ export default function Cadastro() {
                   placeholder="Digite seu sobrenome"
                   value={formData.sobrenome}
                   onChange={handleChange}
-                  onBlur={(e) => validateField("sobrenome", e.target.value)}
+                  onBlur={(e) =>
+                    validateField("sobrenome", e.target.value)
+                  }
                   required
                 />
                 {errors.sobrenome && (
@@ -165,6 +181,7 @@ export default function Cadastro() {
               </div>
             </div>
 
+            {/* Email */}
             <label>Email:</label>
             <input
               type="email"
@@ -177,6 +194,40 @@ export default function Cadastro() {
             />
             {errors.email && <span className={styles.error}>{errors.email}</span>}
 
+            {/* Cidade + Estado */}
+            <div className={styles.row}>
+              <div className={styles.inputGroup}>
+                <label>Cidade:</label>
+                <input
+                  type="text"
+                  name="cidade"
+                  placeholder="Digite sua cidade"
+                  value={formData.cidade}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Estado:</label>
+                <select
+                  name="estado"
+                  value={formData.estado}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Selecione...</option>
+                  {[
+                    "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS",
+                    "MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"
+                  ].map((uf) => (
+                    <option key={uf} value={uf}>{uf}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Senha */}
             <label>Senha:</label>
             <input
               type="password"
@@ -202,35 +253,42 @@ export default function Cadastro() {
             />
 
             {isPasswordFocused && (
-              <div className={`${styles.validationBox}`}>
+              <div className={styles.validationBox}>
                 <p className={validations.length ? styles.valid : styles.invalid}>
-                  {validations.length ? <FaCheckCircle /> : <FaTimesCircle />} Pelo menos 8 caracteres
+                  {validations.length ? <FaCheckCircle /> : <FaTimesCircle />}
+                  Pelo menos 8 caracteres
                 </p>
+
                 <p className={validations.number ? styles.valid : styles.invalid}>
-                  {validations.number ? <FaCheckCircle /> : <FaTimesCircle />} Pelo menos um número
+                  {validations.number ? <FaCheckCircle /> : <FaTimesCircle />}
+                  Pelo menos um número
                 </p>
+
                 <p className={validations.uppercase ? styles.valid : styles.invalid}>
-                  {validations.uppercase ? <FaCheckCircle /> : <FaTimesCircle />} Pelo menos uma letra maiúscula
+                  {validations.uppercase ? <FaCheckCircle /> : <FaTimesCircle />}
+                  Pelo menos uma letra maiúscula
                 </p>
+
                 <p className={validations.special ? styles.valid : styles.invalid}>
-                  {validations.special ? <FaCheckCircle /> : <FaTimesCircle />} Pelo menos um caractere especial
+                  {validations.special ? <FaCheckCircle /> : <FaTimesCircle />}
+                  Pelo menos um caractere especial
                 </p>
+
                 <p className={validations.match ? styles.valid : styles.invalid}>
-                  {validations.match ? <FaCheckCircle /> : <FaTimesCircle />} As senhas coincidem
+                  {validations.match ? <FaCheckCircle /> : <FaTimesCircle />}
+                  As senhas coincidem
                 </p>
               </div>
             )}
 
-            <button type="submit" className={styles.btn}>
+            <button className={styles.btn} type="submit">
               Cadastrar
             </button>
           </form>
 
           <p className={styles.loginText}>
             Já tem uma conta?
-            <a href="/login" className={styles.loginLink}>
-              Faça o login
-            </a>
+            <a href="/login" className={styles.loginLink}>Faça o login</a>
           </p>
         </div>
       </section>

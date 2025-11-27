@@ -1,0 +1,197 @@
+.hero {
+  background: #120c12 url("/public/images/background-hero.png") no-repeat center;
+  background-size: cover;
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px;
+}
+
+/* CARD  */
+.card {
+  background: rgba(20, 18, 22, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 50px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.logoIcon {
+  font-size: 2rem;
+  color: #fff;
+}
+
+h2 {
+  font-size: 34px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #ccc;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+.divider {
+  height: 1px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+}
+
+/* VISUALIZAÇÃO */
+.viewBox {
+  text-align: left;
+  margin-top: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-weight: 600;
+  color: #eee;
+}
+
+.rowSenha {
+  margin-bottom: 10px;
+}
+
+/* garante alinhamento perfeito com a coluna da direita */
+.senhaRightBox {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 3px;
+  margin-bottom: 0px;
+}
+
+/* botão alinhado à direita */
+.altSenhaRight {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #f17b87;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 0px;
+}
+
+.altSenhaRight:hover {
+  color: #ffffff;
+}
+
+/* estilo do valor da senha */
+.senhaValor {
+  text-align: right;
+}
+
+
+.altBtn {
+  background: none;
+  border: none;
+  color: #f17b87;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition:     transform 0.8s ease;
+
+}
+
+.btn {
+  margin-top: 20px;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  text-transform: uppercase;
+  background-image: linear-gradient(90deg, #b84551cc, #c4404dc9, #520e57f1, #240127f1);
+  background-size: 200% 100%;
+  background-position: 20% 50%;
+
+  transition:
+    background-position 0.3s ease-in-out,
+    box-shadow 0.6s ease,
+    transform 0.4s ease;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover {
+  background-position: 100% 50%;
+  box-shadow: 0 0 18px rgba(30, 15, 46, 0.45);
+}
+
+.cancelBtn {
+  margin-top: 8px;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ddd;
+  cursor: pointer;
+}
+
+/* FORM */
+.form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+label {
+  color: #ccc;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+input {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+}
+
+input:focus {
+  border-color: #b48aff;
+  box-shadow: 0 0 6px rgba(180, 138, 255, 0.4);
+  outline: none;
+}
+
+.errorBox,
+.successBox {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.errorBox {
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.2);
+  color: #ff9494;
+}
+
+.successBox {
+  background: rgba(70, 255, 150, 0.1);
+  border: 1px solid rgba(70, 255, 150, 0.2);
+  color: #85ffb8;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

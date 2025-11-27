@@ -87,7 +87,24 @@ export default function Header() {
 
             {userMenuOpen && (
               <div className={styles.dropdown}>
-                <button className={styles.userButton} onClick={handleLogout}>
+                <Link 
+                  to="/minhaconta" 
+                  className={styles.userButton} 
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    setMenuOpen(false);
+                  }}
+                >
+                  Minha Conta
+                </Link>
+
+                <button 
+                  className={styles.userButton} 
+                  onClick={() => {
+                    handleLogout();
+                    setUserMenuOpen(false);
+                  }}
+                >
                   Sair
                 </button>
               </div>

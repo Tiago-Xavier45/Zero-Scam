@@ -6,6 +6,7 @@ import VerificarLink from './pages/VerificarLink';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import axios from 'axios';
+import MinhaConta from './pages/MinhaConta';
 
 function App() {
   const [message, setMessage] = React.useState('');
@@ -28,6 +29,7 @@ function App() {
         <Route path="/verificar" element={<VerificarLink />} />
         <Route path="/login" element={<Login/>} />
         <Route path="/cadastro" element={<Cadastro/>} />
+        <Route path="/minhaconta" element={<MinhaConta/>} />
       </Routes>
     </Router>
   );
