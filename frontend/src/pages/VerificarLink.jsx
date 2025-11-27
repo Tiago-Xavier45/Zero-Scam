@@ -38,7 +38,7 @@ export default function VerificarLink() {
   try {
     console.log('Verificando link:', link);
 
-    const response = await fetch(`http://localhost:8083/api/verificacoes`, {
+    const response = await fetch(`http://localhost:8080/api/verificacoes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

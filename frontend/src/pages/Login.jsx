@@ -45,16 +45,17 @@ export default function Login() {
   if (!isValid) return;
 
   try {
-    const response = await fetch("http://localhost:8082/api/usuarios", {
+    const response = await fetch("http://localhost:8080/api/usuarios/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: email,
-        senha: senha,
+        email,
+        senha,
       }),
     });
+
 
     if (response.ok) {
       const usuario = await response.json();

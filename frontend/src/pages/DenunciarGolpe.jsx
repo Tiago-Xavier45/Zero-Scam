@@ -38,7 +38,7 @@ export default function DenunciarGolpe() {
   };
 
   try {
-    const response = await fetch('http://localhost:8081/api/denuncias', {
+    const response = await fetch('http://localhost:8080/api/denuncias', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
