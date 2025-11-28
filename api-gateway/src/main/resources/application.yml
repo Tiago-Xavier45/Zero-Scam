@@ -49,7 +49,6 @@ spring:
               - "*"
             allowCredentials: true
 
-
 eureka:
   client:
     service-url:
@@ -58,7 +57,9 @@ eureka:
     fetch-registry: true
   instance:
     prefer-ip-address: true
-
+    instance-id: ${spring.application.name}:${server.port}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
 
 logging:
   level:

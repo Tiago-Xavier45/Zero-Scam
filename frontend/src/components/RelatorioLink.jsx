@@ -15,16 +15,7 @@ export default function RelatorioLink({ detalhes }) {
   });
 
   
-  const dica =
-    score >= 90
-      ? "Excelente! O link parece extremamente confiável. Mesmo assim, mantenha cuidado ao inserir informações pessoais."
-      : score >= 70
-      ? "Bom sinal. O link aparenta ser seguro, mas sempre confira o domínio oficial e evite clicar em links de promoções suspeitas."
-      : score >= 50
-      ? "Atenção: Evite inserir dados sensíveis até confirmar a autenticidade."
-      : score >= 30
-      ? "Risco moderado. Foram detectadas indícios de atividade fraudulenta. Recomendamos não prosseguir com o link."
-      : "Alerta vermelho! Este link apresenta alto risco de golpe. Evite acessá-lo e, se possível, denuncie.";
+  const dica = detalhes.dicaSeguranca;
 
   
     const radius = 40; 
