@@ -1,44 +1,7 @@
-/* ----------- TOP BAR ----------- */
-.topBar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  background:  rgba(29, 26, 29, 0.7);
-  color: #f4f4f4;
-  font-size: 0.85rem;
-  padding: 13px 20px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1100;
-  backdrop-filter: blur(6px);
-}
-
-.topRight {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.topRight a {
-  color: #f4f4f4;
-  text-decoration: none;
-  font-weight: 500;
-  opacity: 0.9;
-  transition: opacity 0.2s ease, color 0.2s ease;
-}
-
-.topRight a:hover {
-  opacity: 1;
-  color: #ffffff;
-  text-decoration: underline;
-}
-
-/* ----------- HEADER ----------- */
+/* ---------------- HEADER ---------------- */
 .header {
   position: absolute;
-  top: 12px;
+  top: 20px;
   left: 0;
   right: 0;
   display: flex;
@@ -46,112 +9,166 @@
   align-items: center;
   padding: 24px 40px;
   z-index: 1002;
+  font-family: inherit;
 }
 
+/* ---------------- LOGO ---------------- */
 .logo {
   display: flex;
   align-items: center;
-  font-size: 1.5rem;
-  font-weight: bold;
   gap: 8px;
-  color: #f4f4f4;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.6rem;
   text-decoration: none;
 }
 
 .logoIcon {
-  font-size: 1.6rem;
-  color: #f4f4f4;
+  font-size: 1.7rem;
 }
 
-/* ----------- NAV DESKTOP ----------- */
+/* ---------------- NAV ---------------- */
 .nav {
   display: flex;
   align-items: center;
+  gap: 32px;
 }
-.nav a {
-  margin-left: 30px;
+
+.navItem {
   text-decoration: none;
   color: white;
   font-weight: 500;
+  font-family: inherit;
   position: relative;
+  padding-bottom: 2px;
 }
 
-.nav a:not(.entrarBtn) {
-  padding-bottom: 4px;
-}
-
-.nav a:not(.entrarBtn)::after {
+.navItem::after {
   content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   width: 0%;
   height: 2px;
-  background: white;
-  transition: width 0.3s ease;
+  background: #fff;
+  transition: width 0.3s;
+  border-radius: 4px;
 }
 
-.nav a:not(.entrarBtn):hover::after {
+.navItem:hover::after {
   width: 100%;
 }
 
+.active::after {
+  width: 100%;
+}
+
+/* ---------------- BOTÃO ENTRAR ---------------- */
 .entrarBtn {
-  border: 1px solid #f4f4f4;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: transparent;
-  color: #f4f4f4;
-  transition: all 0.3s;
-  line-height: 1;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.6);
+  color: #fff;
+  text-decoration: none;
+  transition: 0.25s ease;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .entrarBtn:hover {
-  background-color: #f4f4f4;
-  color: #120c12;
+  background: rgba(255,255,255,0.25);
+  color: #fff;
 }
 
-.logoutBtn {
-   margin-left: 30px;
-  border: 1px solid #f4f4f4;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: transparent;
-  color: #f4f4f4;
-  transition: all 0.3s;
-  line-height: 1;
+/* ---------------- USER MENU ---------------- */
+.userMenuContainer {
+  position: relative;
 }
 
-.logoutBtn:hover {
-  background-color: #f4f4f4;
-  color: #120c12;
+.userButton {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.25s ease;
 }
 
-/* ----------- HAMBURGUER ----------- */
-.hamburger {
-  display: none;
-  font-size: 1.6rem;
-  color: white;
+.userButton:hover {
+  background: rgba(255,255,255,0.16);
+}
+
+/* ---------------- DROPDOWN (GLASS + ANIMAÇÃO) ---------------- */
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  min-width: 170px;
+
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: inherit;
+
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+
+  opacity: 0;
+  transform: translateY(14px) scale(0.95);
+  pointer-events: none;
+
+  animation: fadeIn 0.25s ease forwards;
+}
+
+/* Animação suave */
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+    pointer-events: auto;
+  }
+}
+
+.dropdown a,
+.dropdown button {
+  color: #fff;
+  text-decoration: none;
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 1003;
+  text-align: left;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: 0.2s;
+  padding: 4px 0;
 }
 
-/* ----------- NAV MOBILE ----------- */
+.dropdown a:hover,
+.dropdown button:hover {
+  color: #ffe1ff;
+  transform: translateX(4px);
+}
+
+/* ---------------- HAMBÚRGUER ---------------- */
+.hamburger {
+  display: none;
+  font-size: 1.7rem;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ---------------- MOBILE ---------------- */
 @media (max-width: 768px) {
-  .topBar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    font-size: 0.8rem;
-    padding: 8px 20px;
-  }
-
-  .header {
-    top: 60px; /* ajusta altura total no mobile */
-    padding: 18px 24px;
-  }
-
+  
   .hamburger {
     display: block;
   }
@@ -162,13 +179,13 @@
     right: -100%;
     width: 70%;
     height: 100vh;
-    background: rgba(18, 12, 18, 0.95);
-    backdrop-filter: blur(10px);
     flex-direction: column;
     justify-content: center;
-    align-items: center;
     gap: 30px;
-    transition: right 0.3s ease;
+
+    background: rgba(18, 12, 18, 0.75);
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
     z-index: 1001;
   }
 
@@ -176,58 +193,12 @@
     right: 0;
   }
 
-  .nav a {
-    font-size: 1.3rem;
-    margin: 0;
+  .navItem {
+    font-size: 1.4rem;
   }
 
-.userMenuContainer {
-  position: relative;
-  display: inline-block;
-}
-
-.userButton {
-  border: 1px solid #f4f4f4;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: transparent;
-  color: #f4f4f4;
-  transition: all 0.3s;
-  line-height: 1;
-}
-
-.dropdown {
-  position: absolute;
-  right: 0;
-  top: 120%;
-  background-color: #222;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-  display: flex;
-  flex-direction: column;
-  min-width: 150px;
-  z-index: 100;
-}
-
-.userName {
-  color: #fff;
-  margin: 0 0 8px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.userButton {
-  border: 1px solid #f4f4f4;
-  padding: 12px 20px;
-  border-radius: 8px;
-  background: transparent;
-  color: #f4f4f4;
-  transition: all 0.3s;
-  line-height: 1;
-}
-
-.userButton:hover {
-  background-color: #ff3333;
-}
+  .dropdown {
+    right: 50%;
+    transform: translateX(50%);
+  }
 }

@@ -1,95 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { SiHiveBlockchain } from 'react-icons/si';
 import styles from './Header.module.css';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [usuario, setUsuario] = useState(null);
+
   const location = useLocation();
+  const navigate = useNavigate();
 
-  
   useEffect(() => {
-  const checkLogin = () => {
-    const usuarioSalvo = localStorage.getItem("usuario");
-    if (usuarioSalvo) {
-      const parsedUser = JSON.parse(usuarioSalvo);
-      setUsuario(parsedUser);
-      setIsLoggedIn(true);
-    } else {
-      setUsuario(null);
-      setIsLoggedIn(false);
-    }
-  };
-
-    checkLogin(); 
-
-    
-    window.addEventListener("storage", checkLogin);
-    return () => window.removeEventListener("storage", checkLogin);
+    const refresh = () => {
+      const saved = localStorage.getItem("usuario");
+      setUsuario(saved ? JSON.parse(saved) : null);
+    };
+    refresh();
+    window.addEventListener("storage", refresh);
+    return () => window.removeEventListener("storage", refresh);
   }, []);
 
-  
   const handleLogout = () => {
     localStorage.removeItem("usuario");
-    setIsLoggedIn(false);
-    window.dispatchEvent(new Event("storage")); // atualiza o Header
+    setUsuario(null);
+    setUserMenuOpen(false);
     setMenuOpen(false);
+    window.dispatchEvent(new Event("storage"));
+    navigate("/"); // volta pra Home
   };
 
   return (
     <header className={styles.header}>
-      {/* Logo */}
+
       <Link to="/" className={styles.logo} onClick={() => setMenuOpen(false)}>
         <SiHiveBlockchain className={styles.logoIcon} />
         &lt; zeroScam &gt;
       </Link>
 
-     
       <button
         className={styles.hamburger}
         onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Abrir menu"
       >
         {menuOpen ? <FaTimes /> : <FaBars />}
       </button>
 
-     
       <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}>
-        <Link 
-          to="/verificar" 
-          className={`${styles.nav} ${location.pathname === '/verificar' ? styles.activeBtn : ''}`} 
+        
+        <Link
+          to="/verificar"
+          className={`${styles.navItem} ${
+            location.pathname === "/verificar" ? styles.active : ""
+          }`}
           onClick={() => setMenuOpen(false)}
         >
           VERIFICAR LINK
         </Link>
 
-        <Link 
-          to="/denunciar" 
-          className={location.pathname === '/denunciar' ? styles.active : ''} 
+        <Link
+          to="/denunciar"
+          className={`${styles.navItem} ${
+            location.pathname === "/denunciar" ? styles.active : ""
+          }`}
           onClick={() => setMenuOpen(false)}
         >
           DENUNCIAR GOLPE
         </Link>
 
-        
-         {usuario ? (
+        {usuario ? (
           <div className={styles.userMenuContainer}>
-            <button 
-              className={styles.userButton} 
+            
+            <button
+              className={styles.userButton}
               onClick={() => setUserMenuOpen(!userMenuOpen)}
             >
-             <p className={styles.userName}>{usuario.nome || "Olá 'Usuário'"}</p>
+              {`OLÁ, ${usuario.nome?.toUpperCase() || "USUÁRIO"}!`}
             </button>
 
             {userMenuOpen && (
               <div className={styles.dropdown}>
                 <Link 
-                  to="/minhaconta" 
-                  className={styles.userButton} 
+                  to="/minhaconta"
                   onClick={() => {
                     setUserMenuOpen(false);
                     setMenuOpen(false);
@@ -97,28 +89,23 @@ export default function Header() {
                 >
                   Minha Conta
                 </Link>
-
-                <button 
-                  className={styles.userButton} 
-                  onClick={() => {
-                    handleLogout();
-                    setUserMenuOpen(false);
-                  }}
-                >
-                  Sair
-                </button>
+                <button onClick={handleLogout}>Sair</button>
               </div>
             )}
+
           </div>
         ) : (
-          <Link 
+          <Link
             to="/login"
-            className={`${styles.entrarBtn} ${location.pathname === '/login' ? styles.activeBtn : ''}`}
+            className={`${styles.entrarBtn} ${
+              location.pathname === "/login" ? styles.active : ""
+            }`}
             onClick={() => setMenuOpen(false)}
           >
             ENTRAR
           </Link>
         )}
+
       </nav>
     </header>
   );
