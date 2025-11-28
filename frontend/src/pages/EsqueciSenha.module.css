@@ -1,0 +1,109 @@
+.hero {
+  background: #120c12 url("/public/images/background-hero.png") no-repeat center;
+  background-size: cover;
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 20px;
+}
+
+.card {
+  background: rgba(20, 18, 22, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 50px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  color: #fff;
+}
+
+h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #ccc;
+  margin-bottom: 15px;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+label {
+  color: #ccc;
+  margin-bottom: 5px;
+}
+
+input {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  margin-bottom: 15px;
+}
+
+.btn {
+  margin-top: 10px;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+
+  background-image: linear-gradient(90deg, #b84551cc, #c4404dc9, #520e57f1, #240127f1);
+  background-size: 200% 100%;
+  background-position: 20% 50%;
+
+  transition: background-position 0.3s ease-in-out;
+}
+
+.btn:hover {
+  background-position: 100% 50%;
+}
+
+.errorBox {
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.2);
+  color: #ff9494;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.successBox {
+  background: rgba(70, 255, 150, 0.1);
+  border: 1px solid rgba(70, 255, 150, 0.2);
+  color: #85ffb8;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.backText {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.backLink {
+  color: #f17b87;
+  text-decoration: none;
+}

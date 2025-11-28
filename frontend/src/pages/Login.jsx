@@ -142,7 +142,7 @@ export default function Login() {
 
           {!isLoggedIn && (
           <div className={styles.footerLinks}>
-            <a href="/recuperar-senha" className={styles.forgotPassword}>
+            <a href="/esqueci-senha" className={styles.forgotPassword}>
               Esqueceu a senha?
             </a>
             <p className={styles.signupText}>

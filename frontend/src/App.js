@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
 import axios from 'axios';
 import MinhaConta from './pages/MinhaConta';
+import EsqueciSenha from "./pages/EsqueciSenha";
+import ResetarSenha from "./pages/ResetarSenha";
 
 function App() {
   const [message, setMessage] = React.useState('');
@@ -30,6 +32,8 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/cadastro" element={<Cadastro/>} />
         <Route path="/minhaconta" element={<MinhaConta/>} />
+        <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+        <Route path="/resetar-senha" element={<ResetarSenha />} />
       </Routes>
     </Router>
   );
