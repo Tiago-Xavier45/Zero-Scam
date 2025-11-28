@@ -194,19 +194,216 @@
 }
 
 /* --- Responsivo --- */
-@media (max-width: 900px) {
+/* ----- Laptops / tablets largos (<= 1024px) ----- */
+@media (max-width: 1024px) {
+  .hero {
+    padding-top: 80px;
+    padding-bottom: 60px;
+    min-height: auto;
+  }
+
   .contentWrapper {
-    flex-direction: column;
-    text-align: center;
+    padding: 0 28px;
+    gap: 40px;
   }
 
   .textBlock {
+    max-width: 520px;
+    text-align: left;
+  }
+
+  .textBlock h1 {
+    font-size: 2.4rem;
+  }
+
+  .textBlock p {
+    font-size: 1.05rem;
+  }
+
+  .formCard {
+    max-width: 520px;
+    padding: 36px;
+  }
+
+  .formGroup input,
+  .formGroup select,
+  .formGroup textarea {
+    font-size: 0.98rem;
+    padding: 12px 14px;
+  }
+
+  .submitBtn {
+    padding: 12px 14px;
+    height: 48px;
+  }
+}
+
+/* ----- Tablets / celulares grandes (<= 768px) ----- */
+@media (max-width: 768px) {
+  .hero {
+    padding-top: 64px;
+    padding-bottom: 48px;
+  }
+
+  .contentWrapper {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+    gap: 28px;
+  }
+
+  .textBlock {
+    order: 1;
+    text-align: center;
+    max-width: 720px;
+    padding: 0 12px;
+  }
+
+  .textBlock h1 {
+    font-size: 1.9rem;
+    line-height: 1.22;
+  }
+
+  .textBlock p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .formCard {
+    order: 2;
+    width: 100%;
+    max-width: 640px;
+    padding: 28px;
+    box-sizing: border-box;
+  }
+
+  .form {
+    gap: 16px;
+  }
+
+  .formGroup input,
+  .formGroup select,
+  .formGroup textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.96rem;
+    border-radius: 10px;
+  }
+
+  /* garante que qualquer layout em colunas vire coluna única */
+  .form .row,
+  .form .twoCols {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px;
+  }
+
+  .submitBtn {
+    width: 100%;
+    display: block;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 10px;
+  }
+}
+
+/* ----- Celulares médios (<= 480px) ----- */
+@media (max-width: 480px) {
+  .hero {
+    padding-top: 120px;
+    padding-bottom: 32px;
+    min-height: auto;
+    background-position: center top;
+  }
+
+  .contentWrapper {
+    padding: 0 14px;
+    gap: 16px;
+  }
+
+  .textBlock {
+    padding: 0;
     text-align: center;
     max-width: 100%;
   }
 
+  .textBlock h1 {
+    font-size: 1.35rem;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+
+  .textBlock p {
+    font-size: 0.98rem;
+    line-height: 1.4;
+  }
+
   .formCard {
+    padding: 16px;
     width: 100%;
-    max-width: 500px;
+    box-sizing: border-box;
+  }
+
+  .formGroup label {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+  }
+
+  .formGroup input,
+  .formGroup select,
+  .formGroup textarea {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    height: auto;
+  }
+
+  .formGroup textarea {
+    height: 110px;
+  }
+
+  .submitBtn {
+    width: 100%;
+    padding: 13px;
+    font-size: 0.98rem;
+    border-radius: 10px;
+  }
+
+  .spin {
+    font-size: 18px;
+    margin-right: 8px;
+  }
+
+  /* previne overflow por textos muito longos */
+  .formCard,
+  .textBlock {
+    word-break: break-word;
+    hyphens: auto;
+  }
+}
+
+/* ----- Telas muito pequenas / celulares estreitos (<= 360px) ----- */
+@media (max-width: 360px) {
+  .textBlock h1 {
+    font-size: 1.2rem;
+  }
+
+  .textBlock p {
+    font-size: 0.92rem;
+  }
+
+  .formCard {
+    padding: 12px;
+  }
+
+  .formGroup input,
+  .formGroup select,
+  .formGroup textarea {
+    padding: 9px 10px;
+    font-size: 0.92rem;
+  }
+
+  .submitBtn {
+    padding: 12px;
+    font-size: 0.92rem;
   }
 }
