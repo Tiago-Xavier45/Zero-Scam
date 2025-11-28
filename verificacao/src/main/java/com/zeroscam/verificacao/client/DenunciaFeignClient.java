@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(name = "denuncia-service", url = "http://localhost:8081")
+@FeignClient(name = "denuncia-service", url = "http://localhost:8082")
 public interface DenunciaFeignClient {
 
     @GetMapping("/api/denuncias/link")
