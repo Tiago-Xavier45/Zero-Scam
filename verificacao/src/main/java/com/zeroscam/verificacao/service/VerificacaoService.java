@@ -50,119 +50,116 @@ public class VerificacaoService {
             return existente.get();
         }
 
-      
         Verificacao verificacao = new Verificacao();
         verificacao.setLink(link);
         verificacao.setDominio(extrairDominio(link));
         verificacao.setDataVerificacao(LocalDateTime.now());
 
-       
         Map<String, Object> whoisData = whoisService.consultarWhois(verificacao.getDominio());
         if (whoisData != null) {
             verificacao.setPaisRegistro(whoisService.extrairPaisRegistro(whoisData));
         }
 
-        
         int totalDenuncias = buscarTotalDenuncias(link);
 
-        
-        verificacao.setScoreRisco(calcularRisco(link, verificacao.getPaisRegistro(), totalDenuncias));
-        verificacao.setSuspeito(verificacao.getScoreRisco() >= 50);
+        int score = calcularRisco(link, verificacao.getPaisRegistro(), totalDenuncias);
+        verificacao.setScoreRisco(score);
+
+        // 👉 SUSPEITO é true sempre que NÃO estiver no caso "parece seguro"
+        // (score < 30 E totalDenuncias == 0)
+        verificacao.setSuspeito(ehSuspeito(score, totalDenuncias));
 
         return verificacaoRepository.save(verificacao);
     }
 
- public Map<String, Object> verificarLinkCompleto(String link) {
-    // Busca denúncias atualizadas PRIMEIRO
-    int totalDenuncias = buscarTotalDenuncias(link);
-    double valorTotalPerdido = buscarValorTotalPerdido(link);
-    
-    Verificacao verificacao;
-    Optional<Verificacao> existente = buscarPorLink(link);
-    
-    if (existente.isPresent()) {
-        verificacao = existente.get();
-    } else {
-        verificacao = new Verificacao();
-        verificacao.setLink(link);
-        verificacao.setDominio(extrairDominio(link));
-        verificacao.setDataVerificacao(LocalDateTime.now());
-        
-        Map<String, Object> whoisData = whoisService.consultarWhois(verificacao.getDominio());
-        if (whoisData != null) {
-            verificacao.setPaisRegistro(whoisService.extrairPaisRegistro(whoisData));
-        }
-    }
-    
-    
-    int scoreAtualizado = calcularRisco(link, verificacao.getPaisRegistro(), totalDenuncias);
-    verificacao.setScoreRisco(scoreAtualizado);
-    verificacao.setSuspeito(scoreAtualizado >= 50);
-   
-    verificacaoRepository.save(verificacao);
-    
-    Map<String, Object> resultado = new HashMap<>();
-    resultado.put("id", verificacao.getId());
-    resultado.put("link", verificacao.getLink());
-    resultado.put("dominio", verificacao.getDominio());
-    resultado.put("dominioRegistrado", verificacao.getDominio() != null);
-    resultado.put("scoreRisco", scoreAtualizado);
-    resultado.put("suspeito", verificacao.getSuspeito());
-    resultado.put("paisRegistro", verificacao.getPaisRegistro() != null ? verificacao.getPaisRegistro() : "Não identificado");
-    resultado.put("dataRegistro", verificacao.getDataVerificacao().toString());
-    resultado.put("totalDenuncias", totalDenuncias);
-    resultado.put("valorTotalPerdido", valorTotalPerdido);
-    resultado.put("dicaSeguranca", gerarDicaSeguranca(scoreAtualizado, totalDenuncias));
-    
-    return resultado;
-}
+    public Map<String, Object> verificarLinkCompleto(String link) {
+        int totalDenuncias = buscarTotalDenuncias(link);
+        double valorTotalPerdido = buscarValorTotalPerdido(link);
 
-private double buscarValorTotalPerdido(String link) {
-    try {
-        List<Map<String, Object>> denuncias = denunciaClient.buscarPorLink(link);
-        if (denuncias == null || denuncias.isEmpty()) {
-            return 0.0;
+        Verificacao verificacao;
+        Optional<Verificacao> existente = buscarPorLink(link);
+
+        if (existente.isPresent()) {
+            verificacao = existente.get();
+        } else {
+            verificacao = new Verificacao();
+            verificacao.setLink(link);
+            verificacao.setDominio(extrairDominio(link));
+            verificacao.setDataVerificacao(LocalDateTime.now());
+
+            Map<String, Object> whoisData = whoisService.consultarWhois(verificacao.getDominio());
+            if (whoisData != null) {
+                verificacao.setPaisRegistro(whoisService.extrairPaisRegistro(whoisData));
+            }
         }
-        
-        double total = 0.0;
-        for (Map<String, Object> denuncia : denuncias) {
-            Object valor = denuncia.get("valorPerdido");
-            if (valor != null) {
-                if (valor instanceof Number) {
+
+        int scoreAtualizado = calcularRisco(link, verificacao.getPaisRegistro(), totalDenuncias);
+        verificacao.setScoreRisco(scoreAtualizado);
+
+        // 👉 mesma regra aqui
+        verificacao.setSuspeito(ehSuspeito(scoreAtualizado, totalDenuncias));
+
+        verificacaoRepository.save(verificacao);
+
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("id", verificacao.getId());
+        resultado.put("link", verificacao.getLink());
+        resultado.put("dominio", verificacao.getDominio());
+        resultado.put("dominioRegistrado", verificacao.getDominio() != null);
+        resultado.put("scoreRisco", scoreAtualizado);
+        resultado.put("suspeito", verificacao.getSuspeito());
+        resultado.put("paisRegistro", verificacao.getPaisRegistro() != null ? verificacao.getPaisRegistro() : "Não identificado");
+        resultado.put("dataRegistro", verificacao.getDataVerificacao().toString());
+        resultado.put("totalDenuncias", totalDenuncias);
+        resultado.put("valorTotalPerdido", valorTotalPerdido);
+        resultado.put("dicaSeguranca", gerarDicaSeguranca(scoreAtualizado, totalDenuncias));
+
+        return resultado;
+    }
+
+    private double buscarValorTotalPerdido(String link) {
+        try {
+            List<Map<String, Object>> denuncias = denunciaClient.buscarPorLink(link);
+            if (denuncias == null || denuncias.isEmpty()) {
+                return 0.0;
+            }
+
+            double total = 0.0;
+            for (Map<String, Object> denuncia : denuncias) {
+                Object valor = denuncia.get("valorPerdido");
+                if (valor != null && valor instanceof Number) {
                     total += ((Number) valor).doubleValue();
                 }
             }
+            return total;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar valor total perdido: " + e.getMessage());
+            return 0.0;
         }
-        return total;
-    } catch (Exception e) {
-        System.err.println("Erro ao buscar valor total perdido: " + e.getMessage());
-        return 0.0;
     }
-}
 
-private String gerarDicaSeguranca(int scoreRisco, int totalDenuncias) {
-    if (scoreRisco >= 70 || totalDenuncias >= 5) {
-        return "Alerta vermelho! Este link apresenta alto risco de golpe. Evite acessá-lo e, se possível, denuncie.";
-    } else if (scoreRisco >= 50 || totalDenuncias >= 2) {
-        return "Atenção! Este link possui alguns sinais suspeitos. Tenha cautela ao acessá-lo.";
-    } else if (scoreRisco >= 30 || totalDenuncias >= 1) {
-        return "Este link apresenta alguns alertas. Verifique a autenticidade antes de fornecer dados.";
-    } else {
-        return "Este link parece seguro, mas sempre verifique a URL antes de inserir informações pessoais.";
+    private String gerarDicaSeguranca(int scoreRisco, int totalDenuncias) {
+        if (scoreRisco >= 70 || totalDenuncias >= 5) {
+            return "Alerta vermelho! Este link apresenta alto risco de golpe. Evite acessá-lo e, se possível, denuncie.";
+        } else if (scoreRisco >= 50 || totalDenuncias >= 2) {
+            return "Atenção! Este link possui alguns sinais suspeitos. Tenha cautela ao acessá-lo.";
+        } else if (scoreRisco >= 30 || totalDenuncias >= 1) {
+            return "Este link apresenta alguns alertas. Verifique a autenticidade antes de fornecer dados.";
+        } else {
+            return "Este link parece seguro, mas sempre verifique a URL antes de inserir informações pessoais.";
+        }
     }
-}
+
     private int buscarTotalDenuncias(String link) {
-    try {
-        System.out.println("Buscando denúncias para: " + link);  // DEBUG
-        List<Map<String, Object>> denuncias = denunciaClient.buscarPorLink(link);
-        System.out.println("Denúncias encontradas: " + denuncias);  // DEBUG
-        return denuncias != null ? denuncias.size() : 0;
-    } catch (Exception e) {
-        System.err.println("Erro ao buscar denúncias: " + e.getMessage());
-        e.printStackTrace();
-        return 0;
+        try {
+            List<Map<String, Object>> denuncias = denunciaClient.buscarPorLink(link);
+            return denuncias != null ? denuncias.size() : 0;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar denúncias: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
     }
-}
 
     public Verificacao criar(Verificacao verificacao) {
         verificacao.setDataVerificacao(LocalDateTime.now());
@@ -171,15 +168,15 @@ private String gerarDicaSeguranca(int scoreRisco, int totalDenuncias) {
 
     public Verificacao atualizar(String id, Verificacao verificacaoAtualizada) {
         return verificacaoRepository.findById(id)
-            .map(verificacao -> {
-                verificacao.setLink(verificacaoAtualizada.getLink());
-                verificacao.setDominio(verificacaoAtualizada.getDominio());
-                verificacao.setScoreRisco(verificacaoAtualizada.getScoreRisco());
-                verificacao.setSuspeito(verificacaoAtualizada.getSuspeito());
-                verificacao.setPaisRegistro(verificacaoAtualizada.getPaisRegistro());
-                return verificacaoRepository.save(verificacao);
-            })
-            .orElseThrow(() -> new RuntimeException("Verificação não encontrada"));
+                .map(verificacao -> {
+                    verificacao.setLink(verificacaoAtualizada.getLink());
+                    verificacao.setDominio(verificacaoAtualizada.getDominio());
+                    verificacao.setScoreRisco(verificacaoAtualizada.getScoreRisco());
+                    verificacao.setSuspeito(verificacaoAtualizada.getSuspeito());
+                    verificacao.setPaisRegistro(verificacaoAtualizada.getPaisRegistro());
+                    return verificacaoRepository.save(verificacao);
+                })
+                .orElseThrow(() -> new RuntimeException("Verificação não encontrada"));
     }
 
     public void deletar(String id) {
@@ -219,7 +216,7 @@ private String gerarDicaSeguranca(int scoreRisco, int totalDenuncias) {
 
         // Domínios gratuitos suspeitos
         String linkLower = link.toLowerCase();
-        if (linkLower.contains(".tk") || linkLower.contains(".ml") || 
+        if (linkLower.contains(".tk") || linkLower.contains(".ml") ||
             linkLower.contains(".ga") || linkLower.contains(".cf")) {
             risco += 25;
         }
@@ -227,13 +224,13 @@ private String gerarDicaSeguranca(int scoreRisco, int totalDenuncias) {
         // País de registro suspeito
         if (paisRegistro != null) {
             String paisLower = paisRegistro.toLowerCase();
-            if (paisLower.contains("russia") || paisLower.contains("china") || 
+            if (paisLower.contains("russia") || paisLower.contains("china") ||
                 paisLower.contains("nigeria")) {
                 risco += 15;
             }
         }
 
-        // NOVO: Risco baseado em denúncias
+        // Risco baseado em denúncias (mantendo sua lógica)
         if (totalDenuncias >= 10) {
             risco += 40;
         } else if (totalDenuncias >= 5) {
@@ -244,4 +241,12 @@ private String gerarDicaSeguranca(int scoreRisco, int totalDenuncias) {
 
         return Math.min(100, risco);
     }
+
+
+private boolean ehSuspeito(int scoreRisco, int totalDenuncias) {
+    // Seguro somente se: score < 30 e denúncias <= 1
+    boolean seguro = scoreRisco < 30 && totalDenuncias <= 1;
+
+    return !seguro; // suspeito = não seguro
+}
 }

@@ -14,74 +14,76 @@ export default function VerificarLink() {
   const isLoggedIn = Boolean(localStorage.getItem("usuario"));
 
   const handleVerificar = async () => {
-  const urlRegex = /^(https?:\/\/)([a-z0-9-]+\.)+[a-z]{2,}(\/.*)?$/i;
+    const urlRegex = /^(https?:\/\/)([a-z0-9-]+\.)+[a-z]{2,}(\/.*)?$/i;
 
-  if (!link.trim()) {
-    setResultado({
-      status: 'erro',
-      mensagem: 'Por favor, insira um link antes de analisar.',
-    });
-    return;
-  }
-
-  if (!urlRegex.test(link.trim())) {
-    setResultado({
-      status: 'erro',
-      mensagem: 'O link inserido não parece válido.',
-    });
-    return;
-  }
-
-  setCarregando(true);
-  setResultado(null);
-
-  try {
-    console.log('Verificando link:', link);
-
-    const response = await fetch(`http://localhost:8080/api/verificacoes`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ link: link.trim() }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Erro na resposta do servidor');
+    if (!link.trim()) {
+      setResultado({
+        status: 'erro',
+        mensagem: 'Por favor, insira um link antes de analisar.',
+      });
+      return;
     }
 
-    const data = await response.json();
-    console.log('Resposta da API:', data);
+    if (!urlRegex.test(link.trim())) {
+      setResultado({
+        status: 'erro',
+        mensagem: 'O link inserido não parece válido.',
+      });
+      return;
+    }
 
-    const ehPerigoso = data.suspeito || data.scoreRisco >= 60 || data.totalDenuncias >= 5;
+    setCarregando(true);
+    setResultado(null);
 
-    setResultado({
-      status: ehPerigoso ? 'perigoso' : 'seguro',
-      mensagem: ehPerigoso 
-        ? 'Detectamos atividades suspeitas associadas a este link.'
-        : 'Este link parece confiável e não foi reportado em nossa base de dados.',
-      detalhes: {
-        dominioRegistrado: data.dominioRegistrado,
-        score: data.scoreRisco,
-        totalDenuncias: data.totalDenuncias || 0,
-        valorColetado: data.valorTotalPerdido || 0,
-        dicaSeguranca: data.dicaSeguranca,
-        paisRegistro: data.paisRegistro,
-        dataRegistro: data.dataRegistro,
-        dominio: data.dominio
-      },
-    });
+    try {
+      console.log('Verificando link:', link);
 
-  } catch (error) {
-    console.error('Erro ao verificar link:', error);
-    setResultado({
-      status: 'erro',
-      mensagem: 'Erro ao conectar com o servidor.',
-    });
-  } finally {
-    setCarregando(false);
-  }
-};
+      const response = await fetch(`http://localhost:8080/api/verificacoes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ link: link.trim() }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro na resposta do servidor');
+      }
+
+      const data = await response.json();
+      console.log('Resposta da API:', data);
+
+      // ⭐ Usa apenas a informação real do backend
+      const ehPerigoso = data.suspeito;
+
+      setResultado({
+        status: ehPerigoso ? 'perigoso' : 'seguro',
+
+        // ⭐ Usa a dica SEGURA e REAL do backend
+        mensagem: data.dicaSeguranca,
+
+        detalhes: {
+          dominioRegistrado: data.dominioRegistrado,
+          score: data.scoreRisco,
+          totalDenuncias: data.totalDenuncias || 0,
+          valorColetado: data.valorTotalPerdido || 0,
+          dicaSeguranca: data.dicaSeguranca,
+          paisRegistro: data.paisRegistro,
+          dataRegistro: data.dataRegistro,
+          dominio: data.dominio
+        },
+      });
+
+    } catch (error) {
+      console.error('Erro ao verificar link:', error);
+      setResultado({
+        status: 'erro',
+        mensagem: 'Erro ao conectar com o servidor.',
+      });
+    } finally {
+      setCarregando(false);
+    }
+  };
 
   return (
     <section className={styles.hero}>
@@ -90,7 +92,7 @@ export default function VerificarLink() {
       <div className={styles.verificarContainer}>
         <h1>Verificação Inteligente de Links</h1>
         <p>
-          Nosso sistema analisa e classifica a segurança de URLs em tempo real.  
+          Nosso sistema analisa e classifica a segurança de URLs em tempo real.
           Cole o link abaixo e descubra se ele é confiável.
         </p>
 
@@ -100,11 +102,7 @@ export default function VerificarLink() {
             placeholder="Ex: https://www.exemplo.com"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleVerificar();
-              }
-            }}
+            onKeyPress={(e) => e.key === 'Enter' && handleVerificar()}
           />
           <button onClick={handleVerificar} disabled={carregando}>
             {carregando ? <FaSpinner className={styles.spin} /> : 'ANALISAR'}
@@ -122,8 +120,14 @@ export default function VerificarLink() {
                   : styles.erro
               }`}
             >
-              {resultado.status === 'seguro' && <FaCheckCircle className={styles.icon} />}
-              {resultado.status === 'perigoso' && <FaExclamationTriangle className={styles.icon} />}
+              {resultado.status === 'seguro' && (
+                <FaCheckCircle className={styles.icon} />
+              )}
+
+              {resultado.status === 'perigoso' && (
+                <FaExclamationTriangle className={styles.icon} />
+              )}
+
               <p>{resultado.mensagem}</p>
             </div>
 

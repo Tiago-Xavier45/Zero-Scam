@@ -61,7 +61,7 @@ export default function RelatorioLink({ detalhes }) {
 
         {/* Score */}
         <div className={styles.card}>
-          <p className={styles.kicker}>SCORE DE SEGURANÇA:</p>
+          <p className={styles.kicker}>SCORE DE RISCO:</p>
           <h3 className={styles.metric}>{score}</h3>
 
             <div className={styles.donutContainer}>
