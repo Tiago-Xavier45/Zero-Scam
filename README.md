@@ -3,7 +3,7 @@
 
 Uma plataforma web para identificar e denunciar links de golpe, desenvolvida para o desafio Bradesco. O sistema faz verificação inteligente e gratuita, ajudando a proteger usuários contra fraudes digitais e reforçando a segurança e confiança online.
 
-#🧠 Funcionalidades
+# 🧠 Funcionalidades
 
 #🚨 Detecção de links suspeitos
 
