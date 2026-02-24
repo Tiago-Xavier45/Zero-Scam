@@ -19,14 +19,14 @@ Uma plataforma web para identificar e denunciar links de golpe, desenvolvida par
 
 O repositório está organizado em vários módulos, por exemplo:
 
-.
-├── api-gateway/       # API principal do serviço
-├── denuncia/          # Microserviço de denúncias
-├── eureka-server/     # Registro de serviços (Discovery)
-├── frontend/          # Aplicação web (UI)
-├── usuario/           # Serviço de usuários
-├── verificacao/       # Lógica de verificação de links
-└── .vscode/           # Configurações de editor
+
+- api-gateway/       # API principal do serviço
+- denuncia/          # Microserviço de denúncias
+- eureka-server/     # Registro de serviços (Discovery)
+- frontend/          # Aplicação web (UI)
+- usuario/           # Serviço de usuários
+- verificacao/       # Lógica de verificação de links
+- .vscode/           # Configurações de editor
 
 (Ajuste essa estrutura conforme necessário, se alguns módulos tiverem nomes diferentes ou se houver mais pastas)
 
