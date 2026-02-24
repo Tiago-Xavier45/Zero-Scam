@@ -5,17 +5,17 @@ Uma plataforma web para identificar e denunciar links de golpe, desenvolvida par
 
 # 🧠 Funcionalidades
 
-#🚨 Detecção de links suspeitos
+# 🚨 Detecção de links suspeitos
 
-#📣 Denúncia automatizada de possíveis golpes
+# 📣 Denúncia automatizada de possíveis golpes
 
-#🔍 Verificação inteligente em tempo real
+# 🔍 Verificação inteligente em tempo real
 
-#💡 Interface web intuitiva
+# 💡 Interface web intuitiva
 
-#🛡️ Contribui para maior segurança digital
+# 🛡️ Contribui para maior segurança digital
 
-#🧱 Arquitetura do Projeto
+# 🧱 Arquitetura do Projeto
 
 O repositório está organizado em vários módulos, por exemplo:
 
@@ -30,7 +30,7 @@ O repositório está organizado em vários módulos, por exemplo:
 
 (Ajuste essa estrutura conforme necessário, se alguns módulos tiverem nomes diferentes ou se houver mais pastas)
 
-#🛠️ Tecnologias Utilizadas
+# 🛠️ Tecnologias Utilizadas
 
 O projeto combina várias tecnologias comuns em aplicações web modernas:
 
@@ -44,11 +44,11 @@ Outros	Customização conforme necessidade
 
 (Se houver frameworks específicos no frontend, como React ou Vue, inclua aqui também)
 
-#🚀 Como Executar o Projeto
+# 🚀 Como Executar o Projeto
 
 Estas instruções servem para você rodar o projeto localmente.
 
-#📌 Pré-Requisitos
+# 📌 Pré-Requisitos
 
 Java 11+
 
@@ -56,7 +56,7 @@ Node.js (se o frontend usar npm/yarn)
 
 Maven (para módulos Java)
 
-#🧩 Backend
+# 🧩 Backend
 
 Abra cada serviço Java (ex: api-gateway, verificacao, etc)
 
@@ -64,7 +64,7 @@ Rode com Maven:
 
 mvn clean install
 mvn spring-boot:run
-#🛠️ Frontend
+# 🛠️ Frontend
 
 Se houver uma pasta de frontend com Node:
 
@@ -74,7 +74,7 @@ npm run dev
 
 (ou o comando específico do framework usado)
 
-#🧪 Testes
+# 🧪 Testes
 
 Se houver testes automatizados:
 
@@ -86,7 +86,7 @@ npm test
 
 (remova/adapte se o projeto não tiver testes configurados)
 
-#👥 Contribuições
+# 👥 Contribuições
 contribuições são bem-vindas!
 
 Faça um fork deste repositório
